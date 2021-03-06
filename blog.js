@@ -25,11 +25,50 @@ function arrowOrigin(ctx) {
   ctx.set('Access-Control-Allow-Methods', 'PUT, POST, GET, DELETE, OPTIONS');
   ctx.set("Access-Control-Allow-Credentials", true);
 }
+
+//删除文章
+router.post('/deleteArticle', async (ctx) => {
+  arrowOrigin(ctx);
+  let id = ctx.request.body.id;
+  let sql = `delete from article where id=${id}`;
+  let obj = {
+    data: "",
+    code: 0,
+  };
+  let res = await new Promise((resolve, reject) => {
+    connection.query(sql, function (err, result) {
+      if (err) reject(err);
+      resolve(result)
+    });
+  })
+  obj.data = "删除成功"
+  obj.code = 1;
+  ctx.body = obj;
+
+})
+//更新文章
+router.post('/updateArticle', async (ctx, next) => {
+  arrowOrigin(ctx);
+  let data = ctx.request.body;
+  let sql = `update article set title=${data.title},content=${data.content},catetory_id=${data.catetory_id},catetory=${data.catetory} where id = ${data.id}`;
+  let obj = {
+    data: "",
+    code: 0,
+  };
+  let res = await new Promise((resolve, reject) => {
+    connection.query(sql, function (err, result) {
+      if (err) reject(err);
+      resolve(result)
+    });
+  })
+  obj.data = "更新成功"
+  obj.code = 1;
+  ctx.body = obj;
+})
 //添加文章
 router.post('/addArticle', async (ctx, next) => {
-  arrowOrigin(ctx);  
+  arrowOrigin(ctx);
   let data = ctx.request.body;
-  console.log(data.title,data.content,data.catetory_id,data.catetory);
   var sql = `insert into article (title,content,catetory_id,catetory) values ('${data.title}','${data.content}','${data.catetory_id}','${data.catetory}')`;
   let obj = {
     data: "",
@@ -47,8 +86,9 @@ router.post('/addArticle', async (ctx, next) => {
 })
 //获取文章列表
 router.get('/article_list', async (ctx, next) => {
-  arrowOrigin(ctx)
-  var sql = 'SELECT title,content,catetory_id,catetory from article';
+  arrowOrigin(ctx);
+  let catetory_id = ctx.query.catetory_id;
+  var sql = catetory_id ? `SELECT * from article where catetory_id=${catetory_id}` : "SELECT * from article";
   let obj = {
     data: [],
     code: 0,
@@ -66,6 +106,27 @@ router.get('/article_list', async (ctx, next) => {
   ctx.body = obj;
 
 })
+//通过id查询文章
+router.get('/article_detail', async (ctx, next) => {
+  arrowOrigin(ctx);
+  let id = ctx.query.id;
+  var sql = `SELECT * from article where id=${id}`;
+  let obj = {
+    data: [],
+    code: 0,
+  }
+  let arr = await new Promise((resolve, reject) => {
+    connection.query(sql, function (err, result) {
+      if (err) reject(err);
+      resolve(result)
+    });
+  });
+  obj.data = arr[0];
+  obj.code = 1;
+  ctx.body = obj;
+})
+
+
 //删除分类
 router.post('/deleteCatetory', async (ctx, next) => {
   arrowOrigin(ctx);
@@ -179,4 +240,4 @@ app.use(async (ctx, next) => {
   }
 });
 app.use(router.routes())
-app.listen(6789);
+app.listen(6788);
