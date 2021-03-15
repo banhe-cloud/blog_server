@@ -8,7 +8,6 @@ app.use(bodyParser());
 var mysql = require("mysql");
 const multiparty = require('koa2-multiparty');
 
-
 //登录oss
 const client = new OSS({
   region: "oss-cn-hangzhou",
@@ -25,7 +24,7 @@ var connection = mysql.createConnection({
 });
 
 connection.connect((err) => {
-  console.log("数据库连接成功12"+err);
+  console.log("数据库连接成功"+err);
   connection.query("show tables;", function (err, result) {
     if (err) return console.log(err, result)
     let tableArr = [];
@@ -90,9 +89,9 @@ router.post("/uploadImg", multiparty(), async (ctx) => {
   };
 
   let res = await client.multipartUpload(file.name, file.path);
-  console.log(res, "ppppp")
+  console.log(res)
   obj.code = 1;
-  obj.data = res.res.requestUrls[0];
+  obj.data = res.res.requestUrls[0].split('?')[0];
   ctx.body = obj;
 
 })
