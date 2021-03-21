@@ -11,8 +11,8 @@ const multiparty = require('koa2-multiparty');
 //登录oss
 const client = new OSS({
   region: "oss-cn-hangzhou",
-  accessKeyId: "LTAI4FkrkGCtW73BH3KudK28",
-  accessKeySecret: "tEeyrK3Qc3SiClRJY9Zr0RbRxfiPgN",
+  accessKeyId: "",
+  accessKeySecret: "",
   bucket: "banh-test",
 });
 var connection = mysql.createConnection({
